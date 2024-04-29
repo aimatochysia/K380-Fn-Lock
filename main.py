@@ -8,14 +8,15 @@ K380_VID = 0x46d
 K380_PID = 0xb342
 SEQ_LEN = 7
 
+bool_val = False
 # Global variable to track the state of function keys
 function_keys_enabled = False
-
 # Function to control K380 keyboard based on Ctrl + Shift + Alt key combination
-
 
 def control_keyboard(event):
     global function_keys_enabled
+    global K380_SEQ_FKEYS_OFF
+    global K380_SEQ_FKEYS_ON
     if function_keys_enabled:
         print("fn key off")
         toggle_function_keys(K380_SEQ_FKEYS_OFF)
@@ -25,10 +26,11 @@ def control_keyboard(event):
     function_keys_enabled = not function_keys_enabled
 
 # Function to toggle function keys
-
-
 def toggle_function_keys(seq):
     # Initialize the hidapi library
+    global K380_VID
+    global K380_PID
+    global SEQ_LEN
     print("Init toggle")
     handle = None
     try:
@@ -48,9 +50,20 @@ def toggle_function_keys(seq):
         if handle:
             handle.close()
 
+def test_toggle():
+    global bool_val
+    if bool_val == True:
+        print("bool is True, changing to false")
+        bool_val = False
+    elif bool_val == False:
+        print("bool is: False, changing to true")
+        bool_val = True
+    
+# toggle_function_keys(K380_SEQ_FKEYS_ON)
 
-keyboard.add_hotkey("ctrl+shift+alt", control_keyboard,
-                    trigger_on_release=True)
+# pyautogui.hotkey('ctrl', 'shift', 'alt', onPress=control_keyboard)
+# keyboard.add_hotkey('ctrl', get_shift)
 
-keyboard.wait()  # Wait indefinitely without specifying any key
+keyboard.add_hotkey('ctrl + shift + alt',test_toggle) 
+keyboard.wait()
 print("Done Running")
