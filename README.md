@@ -1,7 +1,7 @@
 <h1>K380 Fn Lock</h1>
 <p>Logitech K380 Fn Lock Additonal System (ToChange Function Keys using Hotkey)</br>
 <h1>Download Link:</h1>
-<h3></h3>
+<h3><a href="https://github.com/aimatochysia/K380-Fn-Lock/raw/main/K380-Fn-Lock.zip">Click Here!</a></h3>
 
 <h2 align="center">Hi 👋, I'm Petra Michael</h2>
 <h3 align="center">A passionate Software Developer and Researcher from Indonesia</h3>
