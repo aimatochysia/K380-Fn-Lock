@@ -1,19 +1,17 @@
 import keyboard
 import hid
-
-# Constants for Logitech K380 keyboard
-K380_SEQ_FKEYS_ON = bytes([0x10, 0xff, 0x0b, 0x1e, 0x00, 0x00, 0x00])
-K380_SEQ_FKEYS_OFF = bytes([0x10, 0xff, 0x0b, 0x1e, 0x01, 0x00, 0x00])
+import tkinter as tk
+# Constants Function Keys for Logitech K380 From:
+# jergusg https://github.com/jergusg/k380-function-keys-conf/blob/master/k380_conf.c
+K380_SEQ_FKEYS_ON = bytearray([0x10, 0xff, 0x0b, 0x1e, 0x00, 0x00, 0x00])
+K380_SEQ_FKEYS_OFF = bytearray([0x10, 0xff, 0x0b, 0x1e, 0x01, 0x00, 0x00])
 K380_VID = 0x46d
 K380_PID = 0xb342
 SEQ_LEN = 7
-
-bool_val = False
-# Global variable to track the state of function keys
 function_keys_enabled = False
-# Function to control K380 keyboard based on Ctrl + Shift + Alt key combination
 
-def control_keyboard(event):
+
+def hotkey_toggle():
     global function_keys_enabled
     global K380_SEQ_FKEYS_OFF
     global K380_SEQ_FKEYS_ON
@@ -25,22 +23,18 @@ def control_keyboard(event):
         toggle_function_keys(K380_SEQ_FKEYS_ON)
     function_keys_enabled = not function_keys_enabled
 
-# Function to toggle function keys
+
 def toggle_function_keys(seq):
-    # Initialize the hidapi library
     global K380_VID
     global K380_PID
     global SEQ_LEN
-    print("Init toggle")
     handle = None
     try:
-        # Enumerate connected HID devices
         devs = hid.enumerate(K380_VID, K380_PID)
         for cur_dev in devs:
-            if cur_dev.usage == 1 and cur_dev.usage_page == 65280:  # Check for K380 keyboard
+            if cur_dev['usage'] == 1 and cur_dev['usage_page'] == 65280:
                 handle = hid.device()
                 handle.open_path(cur_dev['path'])
-                # Send the sequence to toggle function keys
                 if handle.write(seq) != SEQ_LEN:
                     print("Error: Failed to toggle function keys")
                 break
@@ -50,20 +44,27 @@ def toggle_function_keys(seq):
         if handle:
             handle.close()
 
-def test_toggle():
-    global bool_val
-    if bool_val == True:
-        print("bool is True, changing to false")
-        bool_val = False
-    elif bool_val == False:
-        print("bool is: False, changing to true")
-        bool_val = True
-    
-# toggle_function_keys(K380_SEQ_FKEYS_ON)
 
-# pyautogui.hotkey('ctrl', 'shift', 'alt', onPress=control_keyboard)
-# keyboard.add_hotkey('ctrl', get_shift)
+def display_message():
+    window = tk.Toplevel()
+    window.attributes('-topmost', True)
+    window.overrideredirect(True)
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+    window_width = 100
+    window_height = 50
+    window.geometry(f'{window_width}x{window_height}')
+    x_position = (screen_width - window_width) // 2
+    y_position = screen_height - window_height
+    window.geometry(f'+{x_position}+{y_position}')
+    label = tk.Label(window, text="Fn", font=("Helvetica", 12))
+    label.pack(expand=True)
+    window.after(1000, window.destroy)
+    window.mainloop()
 
-keyboard.add_hotkey('ctrl + shift + alt',test_toggle) 
-keyboard.wait()
+
+# Main
+display_box()
+# keyboard.add_hotkey('ctrl + shift + alt', hotkey_toggle)
+# keyboard.wait()
 print("Done Running")
