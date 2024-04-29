@@ -1,6 +1,3 @@
-# K380-Fn-Lock
-Logitech K380 Fn Lock (Change Function Keys using Hotkey)
-
 <h1>K380 Fn Lock</h1>
 <p>Logitech K380 Fn Lock Additonal System (ToChange Function Keys using Hotkey)</br>
 <h1>Download Link:</h1>
