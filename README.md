@@ -1,5 +1,5 @@
 <h1>K380 Fn Lock</h1>
-<p>Logitech K380 Fn Lock Additonal System (ToChange Function Keys using Hotkey)</br>
+<p>Logitech K380 Fn Lock Additonal System (To Change Function Keys using Hotkey) Based on this code: https://github.com/jergusg/k380-function-keys-conf/blob/master/k380_conf.c</p></br>
 <p>How to use:</p>
 <p>1.Click the link below</p>
 <p>2.Unzip Anywhere</p>
