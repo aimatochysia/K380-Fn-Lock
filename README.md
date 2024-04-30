@@ -5,6 +5,8 @@
 <p>2.Unzip Anywhere</p>
 <p>3.Click on the .exe file</p>
 <p>4.Press ctrl+shift+alt to toggle between function keys and media keys</p>
+<p></p>
+<p>*Optional Add-to-Startup.exe for automatically run when turning on the computer.</p>
 <h1>Download Link:</h1>
 <h3><a href="https://github.com/aimatochysia/K380-Fn-Lock/raw/main/K380-Fn-Lock.zip">Click Here!</a></h3>
 
