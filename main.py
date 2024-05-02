@@ -2,8 +2,9 @@
 import keyboard
 import hid
 import tkinter as tk
-from win32gui import SetWindowLong, GetWindowLong, SetLayeredWindowAttributes
-from win32con import WS_EX_LAYERED, WS_EX_TRANSPARENT, GWL_EXSTYLE, LWA_ALPHA
+import tkinter.ttk as ttk
+import win32gui
+import win32con
 
 # Constants Function Keys for Logitech K380 From:
 # jergusg https://github.com/jergusg/k380-function-keys-conf/blob/master/k380_conf.c
@@ -23,11 +24,11 @@ def hotkey_toggle():
     if function_keys_enabled:
         print("fn key off")
         toggle_function_keys(K380_SEQ_FKEYS_OFF)
-        # display_box(False)
+        show_osd_message("Fn",1,False)
     else:
         print("fn key on")
         toggle_function_keys(K380_SEQ_FKEYS_ON)
-        # display_box(True)
+        show_osd_message("Fn",1,True)
     function_keys_enabled = not function_keys_enabled
 
 
@@ -52,59 +53,96 @@ def toggle_function_keys(seq):
             handle.close()
 
 
-def set_clickthrough(self, hwnd):
+def setClickthrough(hwnd):
     try:
-        styles = GetWindowLong(hwnd, GWL_EXSTYLE)
-        styles = WS_EX_LAYERED | WS_EX_TRANSPARENT
-        SetWindowLong(hwnd, GWL_EXSTYLE, styles)
-        SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA)
+        styles = win32gui.GetWindowLong(hwnd, win32con.GWL_EXSTYLE)
+        styles = win32con.WS_EX_LAYERED | win32con.WS_EX_TRANSPARENT
+        win32gui.SetWindowLong(hwnd, win32con.GWL_EXSTYLE, styles)
+        win32gui.SetLayeredWindowAttributes(hwnd, 0, 255, win32con.LWA_ALPHA)
     except Exception as e:
         print(e)
 
 
-def display_box(on_off):
-    def lift_window():
-        window.lift()
-        window.after(10, lift_window)
+# def display_box(on_off):
+#     def lift_window():
+#         window.lift()
+#         window.after(10, lift_window)
 
-    def fade_out(opacity=0.5):
-        nonlocal window
-        if opacity > 0:
-            window.attributes('-alpha', opacity)
-            window.after(30, fade_out, opacity - 0.05)
-        else:
-            window.destroy()
+#     def fade_out(opacity=0.5):
+#         nonlocal window
+#         if opacity > 0:
+#             window.attributes('-alpha', opacity)
+#             window.after(30, fade_out, opacity - 0.05)
+#         else:
+#             window.destroy()
 
+#     root = tk.Tk()
+#     root.withdraw()
+#     window = tk.Toplevel()
+#     window.attributes('-topmost', True)
+#     window.attributes('-disabled', True)
+#     window.attributes('-toolwindow', True)
+#     window.wm_attributes("-transparentcolor", "white")
+#     window.attributes('-alpha', 0.5)
+#     window.overrideredirect(True)
+#     screen_width = window.winfo_screenwidth()
+#     screen_height = window.winfo_screenheight()
+#     window_width = 70
+#     window_height = 70
+#     window.geometry(f'{window_width}x{window_height}')
+#     x_position = (screen_width - window_width) // 2
+#     y_position = screen_height - window_height - 20
+#     window.geometry(f'+{x_position}+{y_position}')
+#     if on_off:
+#         label = tk.Label(window, text="Fn", font=(
+#             "Times New Roman", 24), fg="green")
+#     else:
+#         label = tk.Label(window, text="F̶n̶", font=(
+#             "Times New Roman", 24), fg="red")
+#     label.pack(expand=True)
+#     window.after(1000, fade_out)
+#     lift_window()
+#     window.mainloop()
+#     window.destroy()
+#     root.destroy()
+    
+def show_osd_message(message, duration=3, on_off = False):
+    # Create a root window and immediately withdraw it
     root = tk.Tk()
+    root.overrideredirect(True)
     root.withdraw()
-    window = tk.Toplevel()
-    window.attributes('-topmost', True)
-    window.attributes('-disabled', True)
-    window.attributes('-toolwindow', True)
-    window.wm_attributes("-transparentcolor", "white")
-    window.attributes('-alpha', 0.5)
-    window.overrideredirect(True)
-    screen_width = window.winfo_screenwidth()
-    screen_height = window.winfo_screenheight()
-    window_width = 70
-    window_height = 70
-    window.geometry(f'{window_width}x{window_height}')
-    x_position = (screen_width - window_width) // 2
-    y_position = screen_height - window_height - 20
-    window.geometry(f'+{x_position}+{y_position}')
-    if on_off:
-        label = tk.Label(window, text="Fn", font=(
-            "Times New Roman", 24), fg="green")
+    osd_window = tk.Toplevel(root)
+    osd_window.geometry("100x100")
+    osd_window.configure(bg="#0f0f0f")
+    osd_window.overrideredirect(True)
+    root.attributes('-topmost',True)
+    root.attributes('-alpha',0)
+    osd_window.attributes('-alpha',0.5)
+    screen_width = osd_window.winfo_screenwidth()
+    screen_height = osd_window.winfo_screenheight()
+    x_position = (screen_width - 200) // 2
+    y_position = screen_height - 120
+    osd_window.geometry('+{}+{}'.format(x_position, y_position))
+    setClickthrough(osd_window.winfo_id())
+    if on_off == True:
+        label = ttk.Label(osd_window, text=message, font=("Arial",20), foreground="##c2ddff", background="#0f0f0f")
     else:
-        label = tk.Label(window, text="F̶n̶", font=(
-            "Times New Roman", 24), fg="red")
-    label.pack(expand=True)
-    window.after(1000, fade_out)
-    lift_window()
-    window.mainloop()
-    window.destroy()
-    root.destroy()
-
+        label = ttk.Label(osd_window, text=message, font=("Arial",20), foreground="##ffc2c2", background="#0f0f0f")
+    label.place(relx=0.5,rely=0.5, anchor="center")
+    label.pack(pady=(30,0))
+    fade_duration = duration
+    def fade_out():
+        current_opacity = osd_window.attributes("-alpha")
+        if current_opacity > 0:
+            current_opacity -= .01
+            osd_window.attributes("-alpha", current_opacity)
+            osd_window.after(20, fade_out)
+    try:
+        osd_window.after(int(fade_duration * 100), fade_out)
+    except:
+        pass
+    osd_window.after(int(duration * 1000), lambda: (osd_window.destroy(), root.destroy()))
+    osd_window.mainloop()
 
 # Main
 keyboard.add_hotkey('ctrl + shift + alt', hotkey_toggle)
